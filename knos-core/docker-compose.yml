@@ -1,0 +1,24 @@
+# docker-compose.yml
+version: '3.9'
+
+services:
+  db:
+    image: groonga/pgroonga:latest-alpine-17
+    container_name: knos_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: knos
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: knos
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U knos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes: {}
